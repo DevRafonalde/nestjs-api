@@ -1,21 +1,21 @@
 /* eslint-disable indent */
 import {Entity, Column, PrimaryGeneratedColumn} from "typeorm";
 
-@Entity()
+@Entity({name: "tbl_Usuario"})
 export class Usuario {
     @PrimaryGeneratedColumn({name: "ID"})
     id: number;
 
-    @Column({name: "NomeCompleto"})
+    @Column({name: "NomeCompleto", nullable: false})
     nomeCompleto: string;
 
-    @Column({name: "NomeAmigavel"})
-    NomeAmigavel: string;
+    @Column({name: "NomeAmigavel", nullable: false})
+    nomeAmigavel: string;
 
-    @Column({name: "NomeUser"})
+    @Column({name: "NomeUser", nullable: false})
     nomeUser: string;
 
-    @Column({name: "SenhaUser"})
+    @Column({name: "SenhaUser", nullable: false})
     senhaUser: string;
 
     @Column({name: "ID_WebRI"})

@@ -1,19 +1,26 @@
-import {Injectable} from "@nestjs/common";
-import {CreateUsuarioDto} from "./dto/create-usuario.dto";
-import {UpdateUsuarioDto} from "./dto/update-usuario.dto";
+import {ConflictException, Injectable} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
-import {Repository} from "typeorm";
+import {DataSource, Repository} from "typeorm";
 import {Usuario} from "./entities/usuario.entity";
 
 @Injectable()
 export class UsuariosService {
     constructor(
         @InjectRepository(Usuario)
-        private usuariosRepository: Repository<Usuario>
+        private usuariosRepository: Repository<Usuario>,
+        private dataSource: DataSource
     ) {}
 
-    create(createUsuarioDto: CreateUsuarioDto) {
-        return "This action adds a new usuario";
+    create(usuario: Usuario) {
+        const usuarioExistente = this.usuariosRepository.find({
+            where: [{nomeUser: usuario.nomeUser}],
+        });
+
+        if (usuarioExistente) {
+            throw new ConflictException("Usuário já existe no banco de dados");
+        }
+
+        return this.usuariosRepository.save(usuario);
     }
 
     findAll(): Promise<Usuario[]> {
@@ -28,8 +35,8 @@ export class UsuariosService {
         });
     }
 
-    update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
-        return `This action updates a #${id} usuario`;
+    update(usuario: Usuario) {
+        return this.usuariosRepository.save(usuario);
     }
 
     async remove(id: number): Promise<void> {
