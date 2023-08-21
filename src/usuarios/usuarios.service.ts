@@ -11,23 +11,25 @@ export class UsuariosService {
         private dataSource: DataSource
     ) {}
 
-    create(usuario: Usuario) {
-        const usuarioExistente = this.usuariosRepository.find({
+    async create(usuario: Usuario) {
+        const usuarioExistente = await this.usuariosRepository.find({
             where: [{nomeUser: usuario.nomeUser}],
         });
 
-        if (usuarioExistente) {
+        console.log(usuarioExistente);
+
+        if (usuarioExistente.length > 0) {
             throw new ConflictException("Usuário já existe no banco de dados");
         }
 
         return this.usuariosRepository.save(usuario);
     }
 
-    findAll(): Promise<Usuario[]> {
+    findAll() {
         return this.usuariosRepository.find();
     }
 
-    findOne(id: number): Promise<Usuario | null> {
+    findOne(id: number) {
         return this.usuariosRepository.findOne({
             where: {
                 id,
@@ -35,11 +37,13 @@ export class UsuariosService {
         });
     }
 
-    update(usuario: Usuario) {
+    update(id: number, usuario: Usuario) {
+        usuario.id = id;
+        // Arrumar o update
         return this.usuariosRepository.save(usuario);
     }
 
-    async remove(id: number): Promise<void> {
-        await this.usuariosRepository.delete(id);
+    remove(id: number) {
+        return this.usuariosRepository.delete(id);
     }
 }

@@ -1,12 +1,4 @@
-import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Patch,
-    Param,
-    Delete,
-} from "@nestjs/common";
+import {Controller, Get, Post, Body, Put, Param, Delete} from "@nestjs/common";
 import {UsuariosService} from "./usuarios.service";
 import {Usuario} from "./entities/usuario.entity";
 
@@ -16,8 +8,6 @@ export class UsuariosController {
 
     @Post()
     create(@Body() usuario: Usuario) {
-        console.log(usuario);
-
         return this.usuariosService.create(usuario);
     }
 
@@ -31,9 +21,9 @@ export class UsuariosController {
         return this.usuariosService.findOne(+id);
     }
 
-    @Patch(":id")
-    update(@Body() usuario: Usuario) {
-        return this.usuariosService.update(usuario);
+    @Put(":id")
+    update(@Param("id") id: number, @Body() usuario: Usuario) {
+        return this.usuariosService.update(id, usuario);
     }
 
     @Delete(":id")

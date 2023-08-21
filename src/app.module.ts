@@ -4,6 +4,10 @@ import {AppController} from "./app.controller";
 import {AppService} from "./app.service";
 import {UsuariosModule} from "./usuarios/usuarios.module";
 import {Usuario} from "./usuarios/entities/usuario.entity";
+import {PerfisModule} from "./perfis/perfis.module";
+import {SistemasModule} from "./sistemas/sistemas.module";
+import {Sistema} from "./sistemas/entities/sistema.entity";
+import {Perfil} from "./perfis/entities/perfil.entity";
 
 @Module({
     // nest generate module NOMECONTROLLER
@@ -16,7 +20,7 @@ import {Usuario} from "./usuarios/entities/usuario.entity";
             username: "rafael.albuquerque",
             password: "albuquerque@desenvolvimento?.,",
             database: "Intranet",
-            entities: [Usuario],
+            entities: [Usuario, Sistema, Perfil],
             synchronize: false,
             options: {
                 encrypt: false,
@@ -24,6 +28,8 @@ import {Usuario} from "./usuarios/entities/usuario.entity";
             },
         }),
         UsuariosModule,
+        PerfisModule,
+        SistemasModule,
     ],
     // nest generate controller NOMECONTROLLER
     // Esse comando acima cria automaticamente um controller que pedirmos e já insere ele no funcionamento da aplicação
