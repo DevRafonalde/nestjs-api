@@ -1,4 +1,8 @@
-import {ConflictException, Injectable} from "@nestjs/common";
+import {
+    ConflictException,
+    BadRequestException,
+    Injectable,
+} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {DataSource, Repository} from "typeorm";
 import {Usuario} from "./entities/usuario.entity";
@@ -37,13 +41,25 @@ export class UsuariosService {
         });
     }
 
-    update(id: number, usuario: Usuario) {
+    async update(id: number, usuario: Usuario) {
         usuario.id = id;
-        // Arrumar o update
-        return this.usuariosRepository.save(usuario);
+        const novoUsuario = await this.usuariosRepository.save(usuario);
+        return novoUsuario;
     }
 
-    remove(id: number) {
+    async remove(id: number) {
+        const usuarioBanco = await this.usuariosRepository.findOne({
+            where: {
+                id,
+            },
+        });
+
+        if (!usuarioBanco) {
+            throw new BadRequestException(
+                "Usuário não encontrado no banco de dados"
+            );
+        }
+
         return this.usuariosRepository.delete(id);
     }
 }

@@ -1,12 +1,4 @@
-import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Patch,
-    Param,
-    Delete,
-} from "@nestjs/common";
+import {Controller, Get, Post, Body, Param, Delete, Put} from "@nestjs/common";
 import {PerfisService} from "./perfis.service";
 import {Perfil} from "./entities/perfil.entity";
 
@@ -29,7 +21,7 @@ export class PerfisController {
         return this.perfisService.findOne(+id);
     }
 
-    @Patch(":id")
+    @Put(":id")
     update(@Param("id") id: number, @Body() perfil: Perfil) {
         return this.perfisService.update(+id, perfil);
     }

@@ -18,9 +18,6 @@ export class Perfil {
     @Column({name: "ID_Sistema"})
     sistema: Sistema;
 
-    // @Column({name: "ID_Sistema"})
-    // sistemaId: number;
-
     @Column({name: "Nome"})
     nome: string;
 

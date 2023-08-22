@@ -1,4 +1,4 @@
-import {Injectable} from "@nestjs/common";
+import {BadRequestException, Injectable} from "@nestjs/common";
 import {Perfil} from "./entities/perfil.entity";
 import {InjectRepository} from "@nestjs/typeorm";
 import {DataSource, Repository} from "typeorm";
@@ -44,7 +44,19 @@ export class PerfisService {
         return novoPerfil;
     }
 
-    remove(id: number) {
+    async remove(id: number) {
+        const perfilBanco = await this.perfisRepository.findOne({
+            where: {
+                id,
+            },
+        });
+
+        if (!perfilBanco) {
+            throw new BadRequestException(
+                "Perfil não encontrado no banco de dados"
+            );
+        }
+
         return this.perfisRepository.delete(id);
     }
 }
