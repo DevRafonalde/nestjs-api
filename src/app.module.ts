@@ -16,6 +16,9 @@ import {UsuarioPermissaoModule} from "./usuario-permissao/usuario-permissao.modu
 import {UsuarioPermissao} from "./usuario-permissao/entities/usuario-permissao.entity";
 
 @Module({
+    // nest generate resource
+    // Esse comando acima cria automaticamente todo o conteúdo necessário para diversas situações (CRUD completo, por exemplo)
+
     // nest generate module NOMECONTROLLER
     // Esse comando acima cria automaticamente um módulo que pedirmos e já insere ele no funcionamento da aplicação
     imports: [
