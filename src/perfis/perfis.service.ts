@@ -2,12 +2,18 @@ import {BadRequestException, Injectable} from "@nestjs/common";
 import {Perfil} from "./entities/perfil.entity";
 import {InjectRepository} from "@nestjs/typeorm";
 import {DataSource, Repository} from "typeorm";
+import {UsuarioPermissao} from "src/usuario-permissao/entities/usuario-permissao.entity";
+import {PerfilPermissao} from "src/perfil-permissao/entities/perfil-permissao.entity";
 
 @Injectable()
 export class PerfisService {
     constructor(
         @InjectRepository(Perfil)
         private perfisRepository: Repository<Perfil>,
+        @InjectRepository(UsuarioPermissao)
+        private usuarioPermissaoRepository: Repository<UsuarioPermissao>,
+        @InjectRepository(PerfilPermissao)
+        private perfilPermissaoRepository: Repository<PerfilPermissao>,
         private dataSource: DataSource
     ) {}
 
@@ -46,6 +52,10 @@ export class PerfisService {
 
     async remove(id: number) {
         const perfilBanco = await this.perfisRepository.findOne({
+            relations: {
+                perfisPermissao: true,
+                usuarioPermissoes: true,
+            },
             where: {
                 id,
             },
@@ -54,6 +64,18 @@ export class PerfisService {
         if (!perfilBanco) {
             throw new BadRequestException(
                 "Perfil não encontrado no banco de dados"
+            );
+        }
+
+        for (let i = 0; i < perfilBanco.perfisPermissao.length; i++) {
+            this.perfilPermissaoRepository.delete(
+                perfilBanco.perfisPermissao[i].id
+            );
+        }
+
+        for (let i = 0; i < perfilBanco.usuarioPermissoes.length; i++) {
+            this.usuarioPermissaoRepository.delete(
+                perfilBanco.usuarioPermissoes[i].id
             );
         }
 

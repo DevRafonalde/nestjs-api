@@ -44,7 +44,7 @@ module.exports = {
         {
             overrides: {
                 if: {after: true},
-                for: {after: false},
+                for: {after: true},
                 while: {after: false},
                 static: {after: false},
                 as: {after: false},

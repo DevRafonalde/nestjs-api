@@ -6,12 +6,15 @@ import {
 import {InjectRepository} from "@nestjs/typeorm";
 import {DataSource, Repository} from "typeorm";
 import {Usuario} from "./entities/usuario.entity";
+import {UsuarioPermissao} from "src/usuario-permissao/entities/usuario-permissao.entity";
 
 @Injectable()
 export class UsuariosService {
     constructor(
         @InjectRepository(Usuario)
         private usuariosRepository: Repository<Usuario>,
+        @InjectRepository(UsuarioPermissao)
+        private usuarioPermissaoRepository: Repository<UsuarioPermissao>,
         private dataSource: DataSource
     ) {}
 
@@ -47,6 +50,9 @@ export class UsuariosService {
 
     async remove(id: number) {
         const usuarioBanco = await this.usuariosRepository.findOne({
+            relations: {
+                usuarioPermissoes: true,
+            },
             where: {
                 id,
             },
@@ -55,6 +61,12 @@ export class UsuariosService {
         if (!usuarioBanco) {
             throw new BadRequestException(
                 "Usuário não encontrado no banco de dados"
+            );
+        }
+
+        for (let i = 0; i < usuarioBanco.usuarioPermissoes.length; i++) {
+            this.usuarioPermissaoRepository.delete(
+                usuarioBanco.usuarioPermissoes[i].id
             );
         }
 
