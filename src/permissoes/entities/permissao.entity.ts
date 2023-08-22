@@ -1,6 +1,14 @@
 /* eslint-disable indent */
 import {Sistema} from "src/sistemas/entities/sistema.entity";
-import {Entity, Column, ManyToOne, JoinColumn, PrimaryColumn} from "typeorm";
+import {
+    Entity,
+    Column,
+    ManyToOne,
+    JoinColumn,
+    PrimaryColumn,
+    OneToMany,
+} from "typeorm";
+import {PerfilPermissao} from "src/perfil-permissao/entities/perfil-permissao.entity";
 
 @Entity({name: "tbl_Permissao"})
 export class Permissao {
@@ -29,4 +37,10 @@ export class Permissao {
 
     @Column({name: "Mnemonico"})
     mnemonico: string;
+
+    @OneToMany(
+        () => PerfilPermissao,
+        (perfilPermissao) => perfilPermissao.permissao
+    )
+    perfisPermissao: PerfilPermissao[];
 }

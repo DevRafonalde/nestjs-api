@@ -1,6 +1,6 @@
 /* eslint-disable indent */
-import {Perfil} from "src/perfis/entities/perfil.entity";
 import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from "typeorm";
+import {Perfil} from "src/perfis/entities/perfil.entity";
 
 @Entity({name: "tbl_Sistema"})
 export class Sistema {

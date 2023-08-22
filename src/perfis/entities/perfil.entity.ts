@@ -6,7 +6,9 @@ import {
     PrimaryGeneratedColumn,
     ManyToOne,
     JoinColumn,
+    OneToMany,
 } from "typeorm";
+import {PerfilPermissao} from "src/perfil-permissao/entities/perfil-permissao.entity";
 
 @Entity({name: "tbl_Perfil"})
 export class Perfil {
@@ -26,4 +28,10 @@ export class Perfil {
 
     @Column({name: "Excluido", default: false})
     excluido: boolean;
+
+    @OneToMany(
+        () => PerfilPermissao,
+        (perfilPermissao) => perfilPermissao.perfil
+    )
+    perfisPermissao: PerfilPermissao[];
 }
