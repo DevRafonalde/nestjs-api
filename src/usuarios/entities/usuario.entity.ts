@@ -1,5 +1,6 @@
 /* eslint-disable indent */
-import {Entity, Column, PrimaryGeneratedColumn} from "typeorm";
+import {UsuarioPermissao} from "src/usuario-permissao/entities/usuario-permissao.entity";
+import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from "typeorm";
 
 @Entity({name: "tbl_Usuario"})
 export class Usuario {
@@ -38,4 +39,10 @@ export class Usuario {
 
     @Column({name: "Observacao"})
     observacao: string;
+
+    @OneToMany(
+        () => UsuarioPermissao,
+        (usuarioPermissao) => usuarioPermissao.usuario
+    )
+    usuarioPermissoes: UsuarioPermissao[];
 }

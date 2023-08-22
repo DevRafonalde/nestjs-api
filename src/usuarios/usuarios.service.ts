@@ -20,8 +20,6 @@ export class UsuariosService {
             where: [{nomeUser: usuario.nomeUser}],
         });
 
-        console.log(usuarioExistente);
-
         if (usuarioExistente.length > 0) {
             throw new ConflictException("Usuário já existe no banco de dados");
         }

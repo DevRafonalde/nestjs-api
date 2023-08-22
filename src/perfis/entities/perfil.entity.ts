@@ -9,6 +9,7 @@ import {
     OneToMany,
 } from "typeorm";
 import {PerfilPermissao} from "src/perfil-permissao/entities/perfil-permissao.entity";
+import {UsuarioPermissao} from "src/usuario-permissao/entities/usuario-permissao.entity";
 
 @Entity({name: "tbl_Perfil"})
 export class Perfil {
@@ -34,4 +35,10 @@ export class Perfil {
         (perfilPermissao) => perfilPermissao.perfil
     )
     perfisPermissao: PerfilPermissao[];
+
+    @OneToMany(
+        () => UsuarioPermissao,
+        (usuarioPermissao) => usuarioPermissao.perfil
+    )
+    usuarioPermissoes: UsuarioPermissao[];
 }

@@ -12,7 +12,8 @@ import {PermissoesModule} from "./permissoes/permissoes.module";
 import {Permissao} from "./permissoes/entities/permissao.entity";
 import {PerfilPermissaoModule} from "./perfil-permissao/perfil-permissao.module";
 import {PerfilPermissao} from "./perfil-permissao/entities/perfil-permissao.entity";
-import { UsuarioPermissaoModule } from './usuario-permissao/usuario-permissao.module';
+import {UsuarioPermissaoModule} from "./usuario-permissao/usuario-permissao.module";
+import {UsuarioPermissao} from "./usuario-permissao/entities/usuario-permissao.entity";
 
 @Module({
     // nest generate module NOMECONTROLLER
@@ -25,7 +26,14 @@ import { UsuarioPermissaoModule } from './usuario-permissao/usuario-permissao.mo
             username: "rafael.albuquerque",
             password: "albuquerque@desenvolvimento?.,",
             database: "Intranet",
-            entities: [Usuario, Sistema, Perfil, Permissao, PerfilPermissao],
+            entities: [
+                Usuario,
+                Sistema,
+                Perfil,
+                Permissao,
+                PerfilPermissao,
+                UsuarioPermissao,
+            ],
             synchronize: false,
             options: {
                 encrypt: false,
