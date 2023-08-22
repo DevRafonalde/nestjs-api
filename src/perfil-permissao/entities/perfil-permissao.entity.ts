@@ -8,6 +8,8 @@ import {
 } from "typeorm";
 import {Perfil} from "src/perfis/entities/perfil.entity";
 import {Permissao} from "src/permissoes/entities/permissao.entity";
+import {Type} from "class-transformer";
+import {IsDate} from "class-validator";
 
 @Entity({name: "tbl_PerfilPermissao"})
 export class PerfilPermissao {
@@ -15,21 +17,21 @@ export class PerfilPermissao {
     id: number;
 
     @ManyToOne(() => Perfil, (perfis) => perfis.perfisPermissao, {
-        cascade: ["update"],
+        cascade: ["update", "insert"],
     })
     @JoinColumn({name: "ID_Perfil"})
-    // @Column({name: "ID_Perfil"})
     perfil: Perfil;
 
     @ManyToOne(() => Permissao, (permissoes) => permissoes.perfisPermissao, {
-        cascade: ["update"],
+        cascade: ["update", "insert"],
     })
     @JoinColumn({name: "ID_Permissao"})
-    // @Column({name: "ID_Permissao"})
     permissao: Permissao;
 
+    @Type(() => Date)
+    @IsDate()
     @Column({name: "DataHora"})
-    nome: Date;
+    dataHora: Date;
 
     @Column({name: "Excluido", default: false})
     excluido: boolean;

@@ -12,6 +12,7 @@ import {PermissoesModule} from "./permissoes/permissoes.module";
 import {Permissao} from "./permissoes/entities/permissao.entity";
 import {PerfilPermissaoModule} from "./perfil-permissao/perfil-permissao.module";
 import {PerfilPermissao} from "./perfil-permissao/entities/perfil-permissao.entity";
+import { UsuarioPermissaoModule } from './usuario-permissao/usuario-permissao.module';
 
 @Module({
     // nest generate module NOMECONTROLLER
@@ -36,6 +37,7 @@ import {PerfilPermissao} from "./perfil-permissao/entities/perfil-permissao.enti
         SistemasModule,
         PermissoesModule,
         PerfilPermissaoModule,
+        UsuarioPermissaoModule,
     ],
     // nest generate controller NOMECONTROLLER
     // Esse comando acima cria automaticamente um controller que pedirmos e já insere ele no funcionamento da aplicação
