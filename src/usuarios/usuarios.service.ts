@@ -7,6 +7,7 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {DataSource, Repository} from "typeorm";
 import {Usuario} from "./entities/usuario.entity";
 import {UsuarioPermissao} from "src/usuario-permissao/entities/usuario-permissao.entity";
+import {ModeloCadastroUsuarioPerfil} from "./entities/usuario-perfil";
 
 @Injectable()
 export class UsuariosService {
@@ -18,16 +19,29 @@ export class UsuariosService {
         private dataSource: DataSource
     ) {}
 
-    async create(usuario: Usuario) {
+    async create(modelo: ModeloCadastroUsuarioPerfil) {
         const usuarioExistente = await this.usuariosRepository.find({
-            where: [{nomeUser: usuario.nomeUser}],
+            where: [{nomeUser: modelo.usuario.nomeUser}],
         });
 
         if (usuarioExistente.length > 0) {
             throw new ConflictException("Usuário já existe no banco de dados");
         }
 
-        return this.usuariosRepository.save(usuario);
+        const usuarioNovo = modelo.usuario;
+        this.usuariosRepository.save(usuarioNovo);
+
+        const perfis = modelo.perfisUsuario;
+
+        for (let i = 0; i < perfis.length; i++) {
+            const usuarioPermissao = new UsuarioPermissao();
+            usuarioPermissao.usuario = usuarioNovo;
+            usuarioPermissao.dataHora = new Date();
+            usuarioPermissao.perfil = perfis[i];
+            this.usuarioPermissaoRepository.save(usuarioPermissao);
+        }
+
+        return modelo;
     }
 
     findAll() {
