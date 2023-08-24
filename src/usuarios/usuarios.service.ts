@@ -34,7 +34,7 @@ export class UsuariosService {
         const usuarioNovo = modelo.usuario;
         this.usuariosRepository.save(usuarioNovo);
 
-        // Vou forçar o front a enviar apenas o ID de cada perfil, portanto essa busca aqui é válida
+        // Vou forçar o front a enviar apenas o ID de cada perfil, portanto essa busca aqui é necessária
         const perfisId = modelo.perfisUsuario.map((perfil) => perfil.id);
 
         for (let i = 0; i < perfisId.length; i++) {
