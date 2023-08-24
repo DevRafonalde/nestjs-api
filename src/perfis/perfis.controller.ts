@@ -1,14 +1,14 @@
 import {Controller, Get, Post, Body, Param, Delete, Put} from "@nestjs/common";
 import {PerfisService} from "./perfis.service";
-import {Perfil} from "./entities/perfil.entity";
+import ModeloCadastroPerfilPermissao from "./entities/perfil-permissao";
 
 @Controller("perfis")
 export class PerfisController {
     constructor(private readonly perfisService: PerfisService) {}
 
     @Post()
-    create(@Body() perfil: Perfil) {
-        return this.perfisService.create(perfil);
+    create(@Body() modelo: ModeloCadastroPerfilPermissao) {
+        return this.perfisService.create(modelo);
     }
 
     @Get()
@@ -22,8 +22,11 @@ export class PerfisController {
     }
 
     @Put(":id")
-    update(@Param("id") id: number, @Body() perfil: Perfil) {
-        return this.perfisService.update(+id, perfil);
+    update(
+        @Param("id") id: number,
+        @Body() modelo: ModeloCadastroPerfilPermissao
+    ) {
+        return this.perfisService.update(+id, modelo);
     }
 
     @Delete(":id")

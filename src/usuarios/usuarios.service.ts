@@ -14,7 +14,7 @@ import ModeloCadastroUsuarioPerfil from "./entities/usuario-perfil";
 export class UsuariosService {
     constructor(
         @InjectRepository(Usuario)
-        private usuariosRepository: Repository<Usuario>,
+        private usuarioRepository: Repository<Usuario>,
         @InjectRepository(UsuarioPermissao)
         private usuarioPermissaoRepository: Repository<UsuarioPermissao>,
         @InjectRepository(Perfil)
@@ -23,16 +23,18 @@ export class UsuariosService {
     ) {}
 
     async create(modelo: ModeloCadastroUsuarioPerfil) {
-        const usuarioExistente = await this.usuariosRepository.findOne({
+        const usuarioExistente = await this.usuarioRepository.findOne({
             where: [{nomeUser: modelo.usuario.nomeUser}],
         });
 
         if (usuarioExistente) {
-            throw new ConflictException("Usuário já existe no banco de dados");
+            throw new ConflictException(
+                "Esse nome de usuário já está sendo utilizado!"
+            );
         }
 
         const usuarioNovo = modelo.usuario;
-        await this.usuariosRepository.save(usuarioNovo);
+        await this.usuarioRepository.save(usuarioNovo);
 
         // Vou forçar o front a enviar apenas o ID de cada perfil, portanto essa busca aqui é necessária
         const perfisId = modelo.perfisUsuario.map((perfil) => perfil.id);
@@ -48,11 +50,31 @@ export class UsuariosService {
             this.usuarioPermissaoRepository.save(usuarioPermissao);
         }
 
-        return modelo;
+        const {
+            id,
+            nomeCompleto,
+            nomeAmigavel,
+            nomeUser,
+            senhaUser,
+            observacao,
+        } = modelo.usuario;
+        const perfisUsuario = modelo.perfisUsuario;
+
+        const usuario = {
+            id,
+            nomeCompleto,
+            nomeAmigavel,
+            nomeUser,
+            senhaUser,
+            observacao,
+            perfisUsuario,
+        };
+
+        return {usuario};
     }
 
     async findAll() {
-        const usuarios = await this.usuariosRepository.find({
+        const usuarios = await this.usuarioRepository.find({
             relations: {
                 usuarioPermissoes: true,
             },
@@ -116,7 +138,7 @@ export class UsuariosService {
 
     async findOne(idUsuario: number) {
         const modelo = new ModeloCadastroUsuarioPerfil();
-        const usuarioBanco = await this.usuariosRepository.findOne({
+        const usuarioBanco = await this.usuarioRepository.findOne({
             relations: {
                 usuarioPermissoes: true,
             },
@@ -175,16 +197,16 @@ export class UsuariosService {
             perfisUsuario,
         };
 
-        return usuarioRetorno;
+        return {usuarioRetorno};
     }
 
-    async update(id: number, modelo: ModeloCadastroUsuarioPerfil) {
-        const usuarioBanco = await this.usuariosRepository.findOne({
+    async update(idUsuario: number, modelo: ModeloCadastroUsuarioPerfil) {
+        const usuarioBanco = await this.usuarioRepository.findOne({
             relations: {
                 usuarioPermissoes: true,
             },
             where: {
-                id,
+                id: idUsuario,
             },
         });
 
@@ -194,10 +216,10 @@ export class UsuariosService {
             );
         }
 
-        modelo.usuario.id = id;
+        modelo.usuario.id = idUsuario;
         const usuarioNovo = modelo.usuario;
 
-        const usuarioExistente = await this.usuariosRepository.findOne({
+        const usuarioExistente = await this.usuarioRepository.findOne({
             where: [{nomeUser: modelo.usuario.nomeUser}],
         });
 
@@ -216,7 +238,7 @@ export class UsuariosService {
             );
         }
 
-        await this.usuariosRepository.save(usuarioNovo);
+        await this.usuarioRepository.save(usuarioNovo);
 
         const perfisId = modelo.perfisUsuario.map((perfil) => perfil.id);
 
@@ -231,11 +253,31 @@ export class UsuariosService {
             this.usuarioPermissaoRepository.save(usuarioPermissao);
         }
 
-        return modelo;
+        const {
+            id,
+            nomeCompleto,
+            nomeAmigavel,
+            nomeUser,
+            senhaUser,
+            observacao,
+        } = modelo.usuario;
+        const perfisUsuario = modelo.perfisUsuario;
+
+        const usuario = {
+            id,
+            nomeCompleto,
+            nomeAmigavel,
+            nomeUser,
+            senhaUser,
+            observacao,
+            perfisUsuario,
+        };
+
+        return {usuario};
     }
 
     async remove(id: number) {
-        const usuarioBanco = await this.usuariosRepository.findOne({
+        const usuarioBanco = await this.usuarioRepository.findOne({
             relations: {
                 usuarioPermissoes: true,
             },
@@ -256,6 +298,6 @@ export class UsuariosService {
             );
         }
 
-        return this.usuariosRepository.delete(id);
+        return this.usuarioRepository.delete(id);
     }
 }
