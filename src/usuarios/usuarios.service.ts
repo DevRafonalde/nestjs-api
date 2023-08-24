@@ -8,6 +8,7 @@ import {DataSource, Repository} from "typeorm";
 import {Usuario} from "./entities/usuario.entity";
 import {UsuarioPermissao} from "src/usuario-permissao/entities/usuario-permissao.entity";
 import {ModeloCadastroUsuarioPerfil} from "./entities/usuario-perfil";
+import {Perfil} from "src/perfis/entities/perfil.entity";
 
 @Injectable()
 export class UsuariosService {
@@ -16,6 +17,8 @@ export class UsuariosService {
         private usuariosRepository: Repository<Usuario>,
         @InjectRepository(UsuarioPermissao)
         private usuarioPermissaoRepository: Repository<UsuarioPermissao>,
+        @InjectRepository(Perfil)
+        private perfilRepository: Repository<Perfil>,
         private dataSource: DataSource
     ) {}
 
@@ -31,13 +34,17 @@ export class UsuariosService {
         const usuarioNovo = modelo.usuario;
         this.usuariosRepository.save(usuarioNovo);
 
-        const perfis = modelo.perfisUsuario;
+        // Vou forçar o front a enviar apenas o ID de cada perfil, portanto essa busca aqui é válida
+        const perfisId = modelo.perfisUsuario.map((perfil) => perfil.id);
 
-        for (let i = 0; i < perfis.length; i++) {
+        for (let i = 0; i < perfisId.length; i++) {
+            const perfil = await this.perfilRepository.findOne({
+                where: {id: perfisId[i]},
+            });
             const usuarioPermissao = new UsuarioPermissao();
             usuarioPermissao.usuario = usuarioNovo;
             usuarioPermissao.dataHora = new Date();
-            usuarioPermissao.perfil = perfis[i];
+            usuarioPermissao.perfil = perfil;
             this.usuarioPermissaoRepository.save(usuarioPermissao);
         }
 
@@ -56,9 +63,9 @@ export class UsuariosService {
         });
     }
 
-    async update(id: number, usuario: Usuario) {
-        usuario.id = id;
-        const novoUsuario = await this.usuariosRepository.save(usuario);
+    async update(id: number, modelo: ModeloCadastroUsuarioPerfil) {
+        modelo.usuario.id = id;
+        const novoUsuario = await this.usuariosRepository.save(modelo.usuario);
         return novoUsuario;
     }
 

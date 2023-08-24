@@ -1,6 +1,5 @@
 import {Controller, Get, Post, Body, Put, Param, Delete} from "@nestjs/common";
 import {UsuariosService} from "./usuarios.service";
-import {Usuario} from "./entities/usuario.entity";
 import {ModeloCadastroUsuarioPerfil} from "./entities/usuario-perfil";
 
 @Controller("usuarios")
@@ -23,8 +22,11 @@ export class UsuariosController {
     }
 
     @Put(":id")
-    update(@Param("id") id: number, @Body() usuario: Usuario) {
-        return this.usuariosService.update(+id, usuario);
+    update(
+        @Param("id") id: number,
+        @Body() modelo: ModeloCadastroUsuarioPerfil
+    ) {
+        return this.usuariosService.update(+id, modelo);
     }
 
     @Delete(":id")

@@ -17,21 +17,15 @@ export class UsuarioPermissao {
     @PrimaryGeneratedColumn({name: "ID"})
     id: number;
 
-    @ManyToOne(() => Usuario, (usuarios) => usuarios.usuarioPermissoes, {
-        cascade: ["update", "insert"],
-    })
+    @ManyToOne(() => Usuario, (usuarios) => usuarios.usuarioPermissoes)
     @JoinColumn({name: "ID_Usuario"})
     usuario: Usuario;
 
-    @ManyToOne(() => Perfil, (perfis) => perfis.usuarioPermissoes, {
-        cascade: ["update", "insert"],
-    })
+    @ManyToOne(() => Perfil, (perfis) => perfis.usuarioPermissoes)
     @JoinColumn({name: "ID_Perfil"})
     perfil: Perfil;
 
-    @ManyToOne(() => Permissao, (permissoes) => permissoes.usuarioPermissoes, {
-        cascade: ["update", "insert"],
-    })
+    @ManyToOne(() => Permissao, (permissoes) => permissoes.usuarioPermissoes)
     @JoinColumn({name: "ID_Permissao"})
     permissao: Permissao;
 
