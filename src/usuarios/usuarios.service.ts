@@ -7,8 +7,8 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {DataSource, Repository} from "typeorm";
 import {Usuario} from "./entities/usuario.entity";
 import {UsuarioPermissao} from "src/usuario-permissao/entities/usuario-permissao.entity";
-import {ModeloCadastroUsuarioPerfil} from "./entities/usuario-perfil";
 import {Perfil} from "src/perfis/entities/perfil.entity";
+import ModeloCadastroUsuarioPerfil from "./entities/usuario-perfil";
 
 @Injectable()
 export class UsuariosService {
@@ -51,19 +51,131 @@ export class UsuariosService {
         return modelo;
     }
 
-    findAll() {
-        return this.usuariosRepository.find();
+    async findAll() {
+        const usuarios = await this.usuariosRepository.find({
+            relations: {
+                usuarioPermissoes: true,
+            },
+        });
+
+        const resultados = [];
+
+        for (let i = 0; i < usuarios.length; i++) {
+            const modelo = new ModeloCadastroUsuarioPerfil();
+            modelo.usuario = usuarios[i];
+            modelo.perfisUsuario = [];
+            const usuarioPermissao = await this.usuarioPermissaoRepository.find(
+                {
+                    relations: {
+                        usuario: true,
+                        perfil: true,
+                    },
+                    where: {
+                        usuario: {
+                            id: usuarios[i].id,
+                        },
+                    },
+                }
+            );
+
+            for (let j = 0; j < usuarioPermissao.length; j++) {
+                // Vou forçar o front a enviar apenas o ID de cada perfil, portanto essa busca aqui é necessária
+                const perfil = await this.perfilRepository.findOne({
+                    where: {
+                        id: usuarioPermissao[j].perfil.id,
+                    },
+                });
+                modelo.perfisUsuario.push(perfil);
+            }
+
+            const {
+                id,
+                nomeCompleto,
+                nomeAmigavel,
+                nomeUser,
+                senhaUser,
+                observacao,
+            } = modelo.usuario;
+            const perfisUsuario = modelo.perfisUsuario;
+
+            const usuario = {
+                id,
+                nomeCompleto,
+                nomeAmigavel,
+                nomeUser,
+                senhaUser,
+                observacao,
+                perfisUsuario,
+            };
+
+            resultados.push({usuario});
+        }
+
+        return resultados;
     }
 
-    findOne(id: number) {
-        return this.usuariosRepository.findOne({
+    async findOne(idUsuario: number) {
+        const modelo = new ModeloCadastroUsuarioPerfil();
+        const usuarioBanco = await this.usuariosRepository.findOne({
             relations: {
                 usuarioPermissoes: true,
             },
             where: {
-                id,
+                id: idUsuario,
             },
         });
+
+        if (!usuarioBanco) {
+            throw new BadRequestException(
+                "Usuário não encontrado no banco de dados"
+            );
+        }
+
+        modelo.usuario = usuarioBanco;
+        modelo.perfisUsuario = [];
+
+        const usuarioPermissao = await this.usuarioPermissaoRepository.find({
+            relations: {
+                usuario: true,
+                perfil: true,
+            },
+            where: {
+                usuario: {
+                    id: usuarioBanco.id,
+                },
+            },
+        });
+
+        for (let i = 0; i < usuarioPermissao.length; i++) {
+            const perfil = await this.perfilRepository.findOne({
+                where: {
+                    id: usuarioPermissao[i].perfil.id,
+                },
+            });
+            modelo.perfisUsuario.push(perfil);
+        }
+
+        const {
+            id,
+            nomeCompleto,
+            nomeAmigavel,
+            nomeUser,
+            senhaUser,
+            observacao,
+        } = modelo.usuario;
+        const perfisUsuario = modelo.perfisUsuario;
+
+        const usuarioRetorno = {
+            id,
+            nomeCompleto,
+            nomeAmigavel,
+            nomeUser,
+            senhaUser,
+            observacao,
+            perfisUsuario,
+        };
+
+        return usuarioRetorno;
     }
 
     async update(id: number, modelo: ModeloCadastroUsuarioPerfil) {
@@ -82,14 +194,27 @@ export class UsuariosService {
             );
         }
 
+        modelo.usuario.id = id;
+        const usuarioNovo = modelo.usuario;
+
+        const usuarioExistente = await this.usuariosRepository.findOne({
+            where: [{nomeUser: modelo.usuario.nomeUser}],
+        });
+
+        if (
+            usuarioExistente &&
+            usuarioExistente.nomeUser !== usuarioBanco.nomeUser
+        ) {
+            throw new ConflictException(
+                "Esse nome de usuário já está sendo utilizado!"
+            );
+        }
+
         for (let i = 0; i < usuarioBanco.usuarioPermissoes.length; i++) {
             this.usuarioPermissaoRepository.delete(
                 usuarioBanco.usuarioPermissoes[i].id
             );
         }
-
-        modelo.usuario.id = id;
-        const usuarioNovo = modelo.usuario;
 
         await this.usuariosRepository.save(usuarioNovo);
 

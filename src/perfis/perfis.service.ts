@@ -4,6 +4,7 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {DataSource, Repository} from "typeorm";
 import {UsuarioPermissao} from "src/usuario-permissao/entities/usuario-permissao.entity";
 import {PerfilPermissao} from "src/perfil-permissao/entities/perfil-permissao.entity";
+import {Permissao} from "src/permissoes/entities/permissao.entity";
 
 @Injectable()
 export class PerfisService {
@@ -14,6 +15,8 @@ export class PerfisService {
         private usuarioPermissaoRepository: Repository<UsuarioPermissao>,
         @InjectRepository(PerfilPermissao)
         private perfilPermissaoRepository: Repository<PerfilPermissao>,
+        @InjectRepository(Permissao)
+        private permissaoRepository: Repository<Permissao>,
         private dataSource: DataSource
     ) {}
 
@@ -26,6 +29,7 @@ export class PerfisService {
         const perfis = await this.perfisRepository.find({
             relations: {
                 sistema: true,
+                perfisPermissao: true,
             },
         });
 
@@ -36,6 +40,7 @@ export class PerfisService {
         const perfil = await this.perfisRepository.findOne({
             relations: {
                 sistema: true,
+                perfisPermissao: true,
             },
             where: {
                 id,
