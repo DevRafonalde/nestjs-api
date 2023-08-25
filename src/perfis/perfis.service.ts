@@ -165,9 +165,37 @@ export class PerfisService {
 
         modelo.perfil.id = idPerfil;
         const perfilNovo = modelo.perfil;
-        // perfil.id = id;
-        // const novoPerfil = await this.perfilRepository.save(perfil);
-        // return novoPerfil;
+
+        for (let i = 0; i < perfilBanco.perfisPermissao.length; i++) {
+            this.perfilPermissaoRepository.delete(
+                perfilBanco.perfisPermissao[i].id
+            );
+        }
+
+        await this.perfilRepository.save(perfilNovo);
+
+        const permissoesId = modelo.permissoesPerfil.map(
+            (permissao) => permissao.id
+        );
+
+        for (let i = 0; i < permissoesId.length; i++) {
+            const permissao = await this.permissaoRepository.findOne({
+                where: {
+                    id: permissoesId[i],
+                },
+            });
+            const perfilPermissao = new PerfilPermissao();
+            perfilPermissao.perfil = perfilNovo;
+            perfilPermissao.dataHora = new Date();
+            perfilPermissao.permissao = permissao;
+            this.perfilPermissaoRepository.save(perfilPermissao);
+        }
+
+        const {id, sistema, nome, descricao} = modelo.perfil;
+        const permissoesPerfil = modelo.permissoesPerfil;
+        const perfil = {id, sistema, nome, descricao, permissoesPerfil};
+
+        return {perfil};
     }
 
     async remove(id: number) {
