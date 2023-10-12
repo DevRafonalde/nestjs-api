@@ -24,11 +24,11 @@ import {UsuarioPermissao} from "./usuario-permissao/entities/usuario-permissao.e
     imports: [
         TypeOrmModule.forRoot({
             type: "mssql",
-            host: "v-serv06-1risjc",
-            port: 1433,
-            username: "rafael.albuquerque",
-            password: "albuquerque@desenvolvimento?.,",
-            database: "Intranet",
+            host: "",
+            port: ,
+            username: "",
+            password: "",
+            database: "",
             entities: [
                 Usuario,
                 Sistema,
